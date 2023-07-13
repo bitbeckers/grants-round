@@ -651,7 +651,8 @@ const applyMatchingCap = (
 };
 
 export const fetchActiveRounds = async (chainId: ChainId) => {
-  const unixTimestamp = Math.floor(Date.now() / 1000 + 60 * 60);
+  // Get all rounds that have not ended yet, or ended less than 5 minutes ago
+  const unixTimestamp = Math.floor(Date.now() / 1000 - 5 * 60);
   const query = `
     query GetActiveRounds($unixTimestamp: String!) {
       rounds(
