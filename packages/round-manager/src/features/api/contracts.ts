@@ -73,6 +73,10 @@ export const programFactoryContract = (
       address = "0xbB8f276FE1D52a38FbED8845bCefb9A23138Af92";
       break;
     }
+    case ChainId.POLYGON_MAINNET_CHAIN_ID: {
+      address = "0x6bef29C694Ca94c0640f0D01D5EE5c17C7eAba94";
+      break;
+    }
     case ChainId.POLYGON_MUMBAI_CHAIN_ID: {
       address = "0xcc19871C2DaFF31dC1A7add1240B6819A8F4E544";
       break;
@@ -120,6 +124,10 @@ export const roundFactoryContract = (
     }
     case ChainId.FANTOM_TESTNET_CHAIN_ID: {
       address = "0x00F51ba2Cd201F4bFac0090F450de0992a838762";
+      break;
+    }
+    case ChainId.POLYGON_MAINNET_CHAIN_ID: {
+      address = "0x67c39EF4Ed7b3d252e9Fd6D8a5575F5c1166cDce";
       break;
     }
     case ChainId.POLYGON_MUMBAI_CHAIN_ID: {
@@ -176,6 +184,10 @@ export const qfVotingStrategyFactoryContract = (
       address = "0x6038fd0D126CA1D0b2eA8897a06575100f7b16C2";
       break;
     }
+    case ChainId.POLYGON_MAINNET_CHAIN_ID: {
+      address = "0x87d50E83799E8f36eDCEe39cA444A7388aee13a2";
+      break;
+    }
     case ChainId.POLYGON_MUMBAI_CHAIN_ID: {
       address = "0xA86837773d8167C20f648Fcc11dB7eA4B95B4b7A";
       break;
@@ -217,6 +229,10 @@ export const qfRelayStrategyFactoryContract = (
       address = "";
       break;
     }
+    case ChainId.POLYGON_MAINNET_CHAIN_ID: {
+      address = "0x87d50E83799E8f36eDCEe39cA444A7388aee13a2";
+      break;
+    }
     case ChainId.POLYGON_MUMBAI_CHAIN_ID: {
       address = "0xBcC6f8AeCCd46b941A3A0BFd5eC3E0155Bcb78ba";
       break;
@@ -243,6 +259,10 @@ export const merklePayoutStrategy = (chainId: ChainId | undefined) => {
 
   switch (chainId) {
     case ChainId.POLYGON_MUMBAI_CHAIN_ID: {
+      address = "0xa558eC037B858BbaBBd32f70754c4C818d7835b7";
+      break;
+    }
+    case ChainId.POLYGON_MAINNET_CHAIN_ID: {
       address = "0xa558eC037B858BbaBBd32f70754c4C818d7835b7";
       break;
     }

@@ -9,6 +9,7 @@ export enum ChainId {
   OPTIMISM_MAINNET_CHAIN_ID = 10,
   FANTOM_MAINNET_CHAIN_ID = 250,
   FANTOM_TESTNET_CHAIN_ID = 4002,
+  POLYGON_MAINNET_CHAIN_ID = 137,
   POLYGON_MUMBAI_CHAIN_ID = 80001,
 }
 
@@ -38,6 +39,11 @@ export const CHAINS: Record<number, Program["chain"]> = {
   [ChainId.FANTOM_TESTNET_CHAIN_ID]: {
     id: ChainId.FANTOM_TESTNET_CHAIN_ID,
     name: "Fantom Testnet",
+    logo: "./logos/fantom-logo.svg",
+  },
+  [ChainId.POLYGON_MAINNET_CHAIN_ID]: {
+    id: ChainId.POLYGON_MAINNET_CHAIN_ID,
+    name: "Polygon",
     logo: "./logos/fantom-logo.svg",
   },
   [ChainId.POLYGON_MUMBAI_CHAIN_ID]: {
@@ -149,6 +155,16 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
         },
       ];
     }
+    case ChainId.POLYGON_MAINNET_CHAIN_ID: {
+      return [
+        {
+          name: "WMATIC",
+          chainId: ChainId.POLYGON_MAINNET_CHAIN_ID,
+          address: "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+          logo: TokenNamesAndLogos["DAI"],
+        },
+      ];
+    }
     case ChainId.POLYGON_MUMBAI_CHAIN_ID: {
       return [
         {
@@ -193,6 +209,16 @@ export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
 
 export const getVotingOptions = (chainId: ChainId): VotingOption[] => {
   switch (chainId) {
+    case ChainId.POLYGON_MAINNET_CHAIN_ID: {
+      return [
+        {
+          name: "Relay voting",
+          strategy: "QFRelay",
+          chainId: ChainId.POLYGON_MUMBAI_CHAIN_ID,
+          address: "0x87d50E83799E8f36eDCEe39cA444A7388aee13a2",
+        },
+      ];
+    }
     case ChainId.POLYGON_MUMBAI_CHAIN_ID: {
       return [
         {
@@ -250,6 +276,8 @@ const getGraphQLEndpoint = async (chainId: ChainId) => {
       return `${process.env.REACT_APP_SUBGRAPH_FANTOM_MAINNET_API}`;
     case ChainId.FANTOM_TESTNET_CHAIN_ID:
       return `${process.env.REACT_APP_SUBGRAPH_FANTOM_TESTNET_API}`;
+    case ChainId.POLYGON_MAINNET_CHAIN_ID:
+      return `${process.env.REACT_APP_SUBGRAPH_POLYGON_MAINNET_API}`;
     case ChainId.POLYGON_MUMBAI_CHAIN_ID:
       return `${process.env.REACT_APP_SUBGRAPH_POLYGON_MUMBAI_API}`;
     case ChainId.GOERLI_CHAIN_ID:
