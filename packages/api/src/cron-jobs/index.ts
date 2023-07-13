@@ -26,7 +26,7 @@ export function setupCronJobs() {
         `⏱️‍️ Running update match results cron job every ${timeInterval} seconds`
       );
 
-      const activeChainIds = [ChainId.MUMBAI];
+      const activeChainIds = [ChainId.MUMBAI, ChainId.POLYGON_MAINNET];
 
       // Get all active rounds ids per chain
       try {
