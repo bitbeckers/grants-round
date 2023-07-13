@@ -45,6 +45,9 @@ export const getGraphQLEndpoint = (chainId: ChainId) => {
     case ChainId.GOERLI:
       return `${process.env.SUBGRAPH_GOERLI_API}`;
 
+    case ChainId.POLYGON_MAINNET:
+      return `${process.env.SUBGRAPH_POLYGON_MAINNET_API}`;
+
     default:
       return `${process.env.SUBGRAPH_DUMMY_API}`;
   }
