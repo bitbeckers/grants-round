@@ -82,7 +82,7 @@ export const updateRoundMatch = async (chainId: ChainId, _roundId: string) => {
       // Collect most recent tips
       for (const contribution of contributions) {
         const { projectId, contributor } = contribution;
-        const projectAndContributorKey = `${projectId}_${contributor}`;
+        const projectAndContributorKey = `${roundId}_${projectId}_${contributor}`;
         if (!mostRecentTips[projectAndContributorKey]) {
           mostRecentTips[projectAndContributorKey] = {
             roundId,
