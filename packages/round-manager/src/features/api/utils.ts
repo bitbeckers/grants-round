@@ -487,13 +487,44 @@ export const getUTCTime = (date: Date): string => {
 
 export const generateStandardMerkleTree = (distribution: QFDistribution[]) => {
   console.log("Generating merkle tree for distribution: ", distribution);
-  const values = distribution.map((item) => [
+
+  const distributionResults: Record<
+    string,
+    {
+      projectPayoutAddress: string;
+      matchAmount: BigNumber;
+      projectId: string;
+    }
+  > = {};
+  for (const item of distribution) {
+    if (distributionResults[item.projectPayoutAddress]) {
+      distributionResults[item.projectPayoutAddress].matchAmount =
+        distributionResults[item.projectPayoutAddress].matchAmount.add(
+          BigNumber.from(item.matchAmount)
+        );
+    } else {
+      distributionResults[item.projectPayoutAddress] = {
+        projectPayoutAddress: item.projectPayoutAddress,
+        matchAmount: BigNumber.from(item.matchAmount),
+        projectId: item.projectId.split("-")[0],
+      };
+    }
+  }
+
+  console.log("distribution results", distributionResults);
+
+  const values = Object.values(distributionResults).map((item) => [
     item.projectPayoutAddress,
-    BigNumber.from(item.matchAmount),
+    item.matchAmount,
     ethers.utils.formatBytes32String(item.projectId),
   ]);
 
   console.log("merkle tree values: ", values);
+
+  // const totalValue = values.reduce((acc, curr) => {
+  //   return acc.add(curr[1]);
+  // }, BigNumber.from(0));
+  // console.log(totalValue.toString());
 
   return {
     values,
