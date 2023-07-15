@@ -82,19 +82,21 @@ export const updateRoundMatch = async (chainId: ChainId, _roundId: string) => {
       // Collect most recent tips
       for (const contribution of contributions) {
         const { projectId, contributor } = contribution;
-        if (!mostRecentTips[projectId]) {
-          mostRecentTips[projectId] = {
+        const projectAndContributorKey = `${projectId}_${contributor}`;
+        if (!mostRecentTips[projectAndContributorKey]) {
+          mostRecentTips[projectAndContributorKey] = {
             roundId,
             projectId,
             userId: contributor,
             mostRecentIncludedTipTimestamp: contribution.createdAt
           };
         } else if (
-          mostRecentTips[projectId].mostRecentIncludedTipTimestamp <
-          contribution.createdAt
+          mostRecentTips[projectAndContributorKey]
+            .mostRecentIncludedTipTimestamp < contribution.createdAt
         ) {
-          mostRecentTips[projectId].mostRecentIncludedTipTimestamp =
-            contribution.createdAt;
+          mostRecentTips[
+            projectAndContributorKey
+          ].mostRecentIncludedTipTimestamp = contribution.createdAt;
         }
       }
 
