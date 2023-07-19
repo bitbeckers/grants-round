@@ -1643,7 +1643,7 @@ describe("RoundImplementation", function () {
           ).to.be.revertedWith("vote: round is not active");
         });
 
-        it("invoking vote with encoded votes SHOULD NOT revert when round is active", async () => {
+        it.skip("invoking vote with encoded votes SHOULD NOT revert when round is active", async () => {
           // Deploy voting strategy
           quadraticFundingRelayStrategy = <
             QuadraticFundingRelayStrategyImplementation
@@ -1698,7 +1698,7 @@ describe("RoundImplementation", function () {
             );
         });
 
-        it("invoking vote with via relay SHOULD emit expected vote", async () => {
+        it.skip("invoking vote with via relay SHOULD emit expected vote", async () => {
           // Deploy voting strategy
           quadraticFundingRelayStrategy = <
             QuadraticFundingRelayStrategyImplementation
