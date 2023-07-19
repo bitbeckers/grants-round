@@ -1643,7 +1643,7 @@ describe("RoundImplementation", function () {
           ).to.be.revertedWith("vote: round is not active");
         });
 
-        it.skip("invoking vote with encoded votes SHOULD NOT revert when round is active", async () => {
+        it("invoking vote with encoded votes SHOULD NOT revert when round is active", async () => {
           // Deploy voting strategy
           quadraticFundingRelayStrategy = <
             QuadraticFundingRelayStrategyImplementation
@@ -1751,7 +1751,6 @@ describe("RoundImplementation", function () {
           const amounts = [5];
           const grants = [Wallet.createRandom().address];
           const projectIds = [formatBytes32String("grant2")];
-
           await expect(dummyRelay.vote(tokens, amounts, grants, projectIds))
             .to.emit(quadraticFundingRelayStrategy, "Voted")
             .withArgs(

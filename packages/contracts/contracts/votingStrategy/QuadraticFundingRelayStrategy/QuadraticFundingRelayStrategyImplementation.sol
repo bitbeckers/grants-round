@@ -73,8 +73,8 @@ contract QuadraticFundingRelayStrategyImplementation is
                     encodedVotes[i],
                     (address, address, uint256, address, bytes32)
                 );
-            
-            require(msg.sender == _voterAddress, "You are not the voter");
+
+            require(_voterAddress == relayerAddress, "You are not the voter");
 
             if (_token == address(0)) {
                 /// @dev native token transfer to grant address

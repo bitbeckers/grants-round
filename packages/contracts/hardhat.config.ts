@@ -28,6 +28,7 @@ const chainIds = {
 
   // mainnet
   mainnet: 1,
+  polygon: 137,
   "optimism-mainnet": 10,
   "fantom-mainnet": 250,
 };
@@ -124,6 +125,7 @@ const config: HardhatUserConfig = {
   networks: {
     // Main Networks
     mainnet: createMainnetConfig("mainnet"),
+    polygon: createMainnetConfig("polygon-mainnet"),
     "optimism-mainnet": createMainnetConfig("optimism-mainnet"),
     "fantom-mainnet": createMainnetConfig(
       "fantom-mainnet",
