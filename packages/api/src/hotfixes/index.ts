@@ -28,12 +28,12 @@ export const hotfixForRounds = async (
     contributions = contributions.concat(backupContributions);
   }
 
-  const filteredContributionAddressses = ignoredAddresses[roundId] || [];
+  const filteredContributionAddresses = ignoredAddresses[roundId] || [];
 
-  if (filteredContributionAddressses.length) {
+  if (filteredContributionAddresses.length) {
     const filteredContributions: QFContribution[] = contributions.filter(
       contribution =>
-        filteredContributionAddressses.includes(
+        filteredContributionAddresses.includes(
           contribution.projectPayoutAddress
         )
     );
@@ -48,7 +48,7 @@ export const hotfixForRounds = async (
 
     contributions = contributions.filter(
       contribution =>
-        !filteredContributionAddressses.includes(
+        !filteredContributionAddresses.includes(
           contribution.projectPayoutAddress
         )
     );

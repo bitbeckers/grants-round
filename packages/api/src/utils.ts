@@ -544,7 +544,7 @@ export const fetchAverageTokenPrices = async (
           const averagePrice = (startPrice + endPrice) / 2;
           averageTokenPrices[address] = averagePrice;
         } catch (error) {
-          console.error("fetchAverageTokenPrices", error);
+          console.error("fetchAverageTokenPrices a", error);
         }
       } else {
         const nativePriceEndpoint = `https://api.coingecko.com/api/v3/simple/price?ids=${chainName}&vs_currencies=usd`;
@@ -562,7 +562,7 @@ export const fetchAverageTokenPrices = async (
     }
     return averageTokenPrices;
   } catch (error) {
-    console.error("fetchAverageTokenPrices", error);
+    console.error("fetchAverageTokenPrices b", error);
     return { error };
   }
 };

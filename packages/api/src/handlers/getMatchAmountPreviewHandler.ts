@@ -8,6 +8,7 @@ import { hotfixForRounds } from "../hotfixes";
 import { ChainId, QFContribution } from "../types";
 import { BigNumber } from "ethers";
 import { db } from "../database";
+import { backupRounds } from "../constants";
 
 export const getMatchAmountPreviewHandler = async (
   req: Request,
@@ -39,7 +40,7 @@ export const getMatchAmountPreviewHandler = async (
   try {
     let [contributions, metadata] = await Promise.all([
       fetchQFContributionsForRound(chainId as ChainId, roundId),
-      fetchRoundMetadata(chainId as ChainId, roundId)
+      fetchRoundMetadata(chainId as ChainId, backupRounds[roundId] || roundId)
     ]);
 
     const currentMatchResult = await db.getProjectMatchDataByProjectIds(
