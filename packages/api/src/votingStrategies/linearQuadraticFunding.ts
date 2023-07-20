@@ -455,14 +455,14 @@ export const matchQFContributions = async (
     matchResult.matchAmountInToken = matchResult.matchPoolPercentage * totalPot;
   }
 
-  const potTokenPrice: any = await fetchAverageTokenPrices(
-    chainId,
-    [token],
-    roundStartTime,
-    roundEndTime
-  );
+  // const potTokenPrice: any = await fetchAverageTokenPrices(
+  //   chainId,
+  //   [token],
+  //   roundStartTime,
+  //   roundEndTime
+  // );
 
-  const totalPotInUSD = totalPot * potTokenPrice[token];
+  const totalPotInUSD = totalPot * prices[token];
 
   // TODO: enable this as a feature
   // isSaturated = totalMatchInUSD > totalPotInUSD;
@@ -652,7 +652,7 @@ const applyMatchingCap = (
 
 export const fetchActiveRounds = async (chainId: ChainId) => {
   // Get all rounds that have not ended yet, or ended less than 5 minutes ago
-  const unixTimestamp = Math.floor(Date.now() / 1000 - 5 * 60);
+  const unixTimestamp = Math.floor(Date.now() / 1000 - 5 * 60 * 60);
   const query = `
     query GetActiveRounds($unixTimestamp: String!) {
       rounds(
