@@ -49,7 +49,11 @@ export const getMatchAmountPreviewHandler = async (
 
     const currentMatch = currentMatchResult?.result[0];
 
-    contributions = await hotfixForRounds(roundId, contributions);
+    contributions = await hotfixForRounds(
+      chainId as ChainId,
+      roundId,
+      contributions
+    );
 
     const newContribution: QFContribution = {
       contributor: contributor,
