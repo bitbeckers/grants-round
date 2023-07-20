@@ -4,7 +4,7 @@ import { ChainId, QFContributionSummary, RoundMetadata } from "../types";
 import { fetchRoundMetadata, handleResponse } from "../utils";
 import {
   fetchQFContributionsForProjects,
-  summarizeQFContributions,
+  summarizeQFContributions
 } from "../votingStrategies/linearQuadraticFunding";
 import { hotfixForRounds } from "../hotfixes";
 import { cache } from "../cacheConfig";
@@ -86,7 +86,7 @@ export const updateProjectSummaryHandler = async (
         createdAt: null,
         updatedAt: new Date(),
         ...results,
-        roundId: roundId,
+        roundId: roundId
       };
       cache.set(`cache_${req.originalUrl}`, dbFailResults);
       return handleResponse(res, 200, `${req.originalUrl}`, dbFailResults);
@@ -125,10 +125,15 @@ export const getProjectsSummary = async (
         roundId,
         roundMetadata,
         votingStrategyId,
-        projectIds,
+        projectIds
       );
 
-      contributions = await hotfixForRounds(roundId, contributions, projectIds);
+      contributions = await hotfixForRounds(
+        chainId as ChainId,
+        roundId,
+        contributions,
+        projectIds
+      );
 
       // fetch round stats
       results = await summarizeQFContributions(chainId, contributions);

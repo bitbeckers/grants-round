@@ -13,12 +13,14 @@ import {
 } from "../votingStrategies/linearQuadraticFunding";
 import { hotfixForRounds } from "../hotfixes";
 import { db } from "../database";
+import { backupRounds } from "../constants";
 
 export const updateRoundMatch = async (chainId: ChainId, _roundId: string) => {
   let results: QFDistributionResults | undefined;
 
   const roundId = _roundId.toLowerCase();
-  const metadata = await fetchRoundMetadata(chainId as ChainId, roundId);
+  const metaDataId = backupRounds[roundId] || roundId;
+  const metadata = await fetchRoundMetadata(chainId as ChainId, metaDataId);
   const { votingStrategy } = metadata;
 
   const votingStrategyName = votingStrategy.strategyName as VotingStrategy;
@@ -33,7 +35,7 @@ export const updateRoundMatch = async (chainId: ChainId, _roundId: string) => {
         roundId
       );
 
-      contributions = await hotfixForRounds(roundId, contributions);
+      contributions = await hotfixForRounds(chainId, roundId, contributions);
 
       results = await matchQFContributions(
         chainId as ChainId,

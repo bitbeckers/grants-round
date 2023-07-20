@@ -3,10 +3,11 @@ import { ChainId, QFContributionSummary, RoundMetadata } from "../types";
 import { handleResponse } from "../utils";
 import {
   fetchQFContributionsForRound,
-  summarizeQFContributions,
+  summarizeQFContributions
 } from "../votingStrategies/linearQuadraticFunding";
 import { cache } from "../cacheConfig";
-import {updateRoundSummary} from "../lib/updateRoundSummary";
+import { updateRoundSummary } from "../lib/updateRoundSummary";
+import { hotfixForRounds } from "../hotfixes";
 
 /**
  * updateRoundSummaryHandler is a function that handles HTTP requests for summary information for a given round.
@@ -30,16 +31,11 @@ export const updateRoundSummaryHandler = async (
   }
 
   try {
-      const result = await updateRoundSummary(chainId as ChainId, roundId);
+    const result = await updateRoundSummary(chainId as ChainId, roundId);
 
-      cache.set(`cache_${req.originalUrl}`, result);
+    cache.set(`cache_${req.originalUrl}`, result);
 
-      return handleResponse(
-        res,
-        200,
-        `${req.originalUrl}`,
-        result
-      );
+    return handleResponse(res, 200, `${req.originalUrl}`, result);
   } catch (error) {
     console.error("updateRoundSummaryHandler", error);
     return handleResponse(res, 500, "error: something went wrong");
@@ -66,11 +62,9 @@ export const getRoundSummary = async (
   switch (strategyName) {
     case "LINEAR_QUADRATIC_FUNDING":
       // fetch contributions
-      let contributions = await fetchQFContributionsForRound(
-        chainId,
-        roundId,
-      );
+      let contributions = await fetchQFContributionsForRound(chainId, roundId);
 
+      contributions = await hotfixForRounds(chainId, roundId, contributions);
 
       // fetch round stats
       results = await summarizeQFContributions(chainId, contributions);

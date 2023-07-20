@@ -1,7 +1,10 @@
-import { QFContribution } from "../types";
+import { ChainId, QFContribution } from "../types";
 import { addMissingUNICEFContributions } from "./unicefMissingContributions";
+import { fetchQFContributionsForRound } from "../votingStrategies/linearQuadraticFunding";
+import { backupRounds, ignoredAddresses } from "../constants";
 
 export const hotfixForRounds = async (
+  chainId: ChainId,
   roundId: string,
   contributions: QFContribution[],
   projectIds?: string[]
@@ -11,6 +14,43 @@ export const hotfixForRounds = async (
     contributions = await addMissingUNICEFContributions(
       contributions,
       projectIds
+    );
+  }
+
+  // Use contributions for the backup round as well, useful when extending a round into a different one
+  if (backupRounds[roundId]) {
+    const backupRoundId = backupRounds[roundId];
+    const backupContributions = await fetchQFContributionsForRound(
+      chainId,
+      backupRoundId
+    );
+
+    contributions = contributions.concat(backupContributions);
+  }
+
+  const filteredContributionAddressses = ignoredAddresses[roundId] || [];
+
+  if (filteredContributionAddressses.length) {
+    const filteredContributions: QFContribution[] = contributions.filter(
+      contribution =>
+        filteredContributionAddressses.includes(
+          contribution.projectPayoutAddress
+        )
+    );
+
+    if (filteredContributions.length) {
+      console.log(
+        "Filtered contributions for round",
+        roundId,
+        filteredContributions
+      );
+    }
+
+    contributions = contributions.filter(
+      contribution =>
+        !filteredContributionAddressses.includes(
+          contribution.projectPayoutAddress
+        )
     );
   }
 
