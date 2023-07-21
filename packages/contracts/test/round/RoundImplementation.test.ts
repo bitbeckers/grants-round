@@ -1698,6 +1698,64 @@ describe("RoundImplementation", function () {
             );
         });
 
+        it("invoking vote via relay SHOULD revert", async () => {
+          // Deploy voting strategy
+          quadraticFundingRelayStrategy = <
+            QuadraticFundingRelayStrategyImplementation
+          >await deployContract(
+            user,
+            quadraticFundingRelayStrategyArtifact,
+            []
+          );
+          // Deploy PayoutStrategy contract
+          payoutStrategy = <MerklePayoutStrategyImplementation>(
+            await deployContract(user, payoutStrategyArtifact, [])
+          );
+
+          await mockERC20.approve(quadraticFundingRelayStrategy.address, 1000);
+
+          const params = [
+            quadraticFundingRelayStrategy.address, // _quadraticFundingRelayStrategyAddress
+            payoutStrategy.address, // _payoutStrategyAddress
+            _currentBlockTimestamp + 100, // _applicationsStartTime
+            _currentBlockTimestamp + 250, // _applicationsEndTime
+            _currentBlockTimestamp + 500, // _roundStartTime
+            _currentBlockTimestamp + 1000, // _roundEndTime
+            mockERC20.address, // _token
+            _roundMetaPtr, // _roundMetaPtr
+            _applicationMetaPtr, // _applicationMetaPtr
+            _adminRoles, // _adminRoles
+            _roundOperators, // _roundOperators
+          ];
+
+          // Deploy Round contract
+          const newRoundImplementation = <RoundImplementation>(
+            await deployContract(user, roundImplementationArtifact, [])
+          );
+          await newRoundImplementation.initialize(
+            encodeRoundParameters(params)
+          );
+
+          // Set up relayer
+          dummyRelay = <DummyRelay>(
+            await deployContract(user, dummyRelayArtifact, [
+              newRoundImplementation.address,
+            ])
+          );
+          // Mine Blocks
+          await ethers.provider.send("evm_mine", [
+            _currentBlockTimestamp + 900,
+          ]);
+
+          const tokens = [mockERC20.address];
+          const amounts = [5];
+          const grants = [Wallet.createRandom().address];
+          const projectIds = [formatBytes32String("grant2")];
+          await expect(
+            dummyRelay.vote(tokens, amounts, grants, projectIds)
+          ).to.be.revertedWith("You are not the voter");
+        });
+
         it.skip("invoking vote with via relay SHOULD emit expected vote", async () => {
           // Deploy voting strategy
           quadraticFundingRelayStrategy = <

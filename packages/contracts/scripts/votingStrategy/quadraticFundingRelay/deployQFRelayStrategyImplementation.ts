@@ -20,15 +20,38 @@ export async function main() {
   const contractFactory = await ethers.getContractFactory(
     "QuadraticFundingRelayStrategyImplementation"
   );
-  const contract = await contractFactory.deploy();
+  const instance = await contractFactory.deploy();
+  await instance.deployed();
 
   console.log(
-    `Deploying QuadraticFundingRelayStrategyImplementation to ${contract.address}`
+    `Deploying QuadraticFundingRelayStrategyImplementation to ${instance.address}`
   );
-  await contract.deployTransaction.wait(blocksToWait);
+
+  await instance.deployTransaction.wait(blocksToWait);
   console.log("✅ Deployed.");
 
-  return contract.address;
+  if (hre.network.name !== ("localhost" || "hardhat")) {
+    try {
+      const code = await instance?.provider.getCode(instance.address);
+      if (code === "0x") {
+        console.log(
+          `contract deployment has not completed. waiting to verify...`
+        );
+        await instance?.deployed();
+      }
+
+      await hre.run("verify:verify", {
+        address: instance.address,
+      });
+    } catch ({ message }) {
+      if ((message as string).includes("Reason: Already Verified")) {
+        console.log("Reason: Already Verified");
+      }
+      console.error(message);
+    }
+  }
+
+  return instance.address;
 }
 
 main().catch((error) => {

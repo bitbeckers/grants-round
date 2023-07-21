@@ -158,6 +158,7 @@ const config: HardhatUserConfig = {
       ftmTestnet: process.env.FTMSCAN_API_KEY,
       opera: process.env.FTMSCAN_API_KEY,
       polygonMumbai: process.env.POLYGONSCAN_API_KEY,
+      polygon: process.env.POLYGONSCAN_API_KEY,
     },
   },
   abiExporter: abiExporter,
