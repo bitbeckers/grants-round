@@ -2,9 +2,9 @@ specVersion: 0.0.4
 schema:
   file: ./schema.graphql
 # TODO: wait until ipfs.cat is supported in studio
-# features:
-# - ipfsOnEthereumContracts
-# - nonDeterministicIpfs
+features:
+  - ipfsOnEthereumContracts
+  - nonDeterministicIpfs
 dataSources:
   # ProgramFactory
   - kind: ethereum/contract
@@ -16,7 +16,7 @@ dataSources:
       startBlock: {{ startBlock }}
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.6
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
         - Program
@@ -40,10 +40,13 @@ dataSources:
       startBlock: {{ startBlock }}
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.6
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
         - Round
+        - QuadraticTipping
+        - QuadraticTippingDistribution
+        - RoundMetaData
       abis:
         - name: RoundFactory
           file: ./abis/RoundFactory.json
@@ -64,7 +67,7 @@ dataSources:
       startBlock: {{ startBlock }}
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.6
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
         - VotingStrategy
@@ -93,7 +96,7 @@ dataSources:
       startBlock: {{ startBlock }}
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.6
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
         - VotingStrategy
@@ -106,6 +109,31 @@ dataSources:
         - event: VotingContractCreated(indexed address,indexed address)
           handler: handleVotingContractCreated
       file: ./src/votingStrategy/QuadraticFundingRelay/factory.ts
+  
+  # MerklePayoutStrategyFactory
+  - kind: ethereum/contract
+    name: MerklePayoutStrategyFactory
+    network: {{ network }}
+    source:
+      address: '{{ merklePayoutStrategyFactoryAddress }}'
+      abi: MerklePayoutStrategyFactory
+      startBlock: {{ startBlock }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - QuadraticTipping
+        - QuadraticTippingDistribution
+      abis:
+        - name: MerklePayoutStrategyFactory
+          file: ./abis/MerklePayoutStrategyFactory.json
+        - name: MerklePayoutStrategyImplementation
+          file: ./abis/MerklePayoutStrategyImplementation.json
+      eventHandlers:
+        - event: PayoutContractCreated(indexed address,indexed address)
+          handler: handlePayoutContractCreated
+      file: ./src/payout/factory.ts
 
 templates:
   # ProgramImplementation AccessControl
@@ -116,7 +144,7 @@ templates:
       abi: ProgramImplementation
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.6
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
         - ProgramRole
@@ -130,7 +158,7 @@ templates:
           handler: handleRoleRevoked
       file: ./src/program/implementation.ts
 
-  # RoundImplementation AccessControl
+  # RoundImplementation 
   - kind: ethereum/contract
     name: RoundImplementation
     network: {{ network }}
@@ -138,10 +166,11 @@ templates:
       abi: RoundImplementation
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.6
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
         - RoundRole
+        - QuadraticTipping
       abis:
         - name: RoundImplementation
           file: ./abis/RoundImplementation.json
@@ -154,6 +183,10 @@ templates:
           handler: handleNewProjectApplication
         - event: ProjectsMetaPtrUpdated((uint256,string),(uint256,string))
           handler: handleProjectsMetaPtrUpdated
+        - event: EscrowFundsToPayoutContract(uint256)
+          handler: handleEscrowFundsToPayoutContract
+        - event: MatchAmountUpdated(uint256)
+          handler: handleMatchAmountUpdated
       file: ./src/round/implementation.ts
 
   # QuadraticFundingVotingStrategyImplementation
@@ -164,7 +197,7 @@ templates:
       abi: QuadraticFundingVotingStrategyImplementation
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.6
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
         - QFVote
@@ -186,7 +219,7 @@ templates:
       abi: QuadraticFundingRelayStrategyImplementation
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.6
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
         - QFVote
@@ -195,11 +228,49 @@ templates:
           file: ./abis/QuadraticFundingRelayStrategyImplementation.json
       eventHandlers:
         - event: Voted(address,uint256,indexed address,address,indexed bytes32,indexed address)
-          handler: handleVote
+          handler: handleRelayVote
           receipt: true
 
       file: ./src/votingStrategy/quadraticFundingRelay/implementation.ts
 
+  # MerklePayoutStrategyImplementation
+  - kind: ethereum/contract
+    name: MerklePayoutStrategyImplementation
+    network: {{ network }}
+    source:
+      abi: MerklePayoutStrategyImplementation
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - QuadraticTipping
+        - QuadraticTippingDistribution
+      abis:
+        - name: MerklePayoutStrategyImplementation
+          file: ./abis/MerklePayoutStrategyImplementation.json
+      eventHandlers:
+        - event: FundsDistributed(uint256,address,indexed address,indexed bytes32)
+          handler: handleFundsDistributed
+        - event: ReadyForPayout()
+          handler: handleReadyForPayout
+        - event: BatchPayoutSuccessful(indexed address)
+          handler: handleBatchPayoutSuccessful
+      file: ./src/payout/implementation.ts
+
+  - name: RoundMetaData 
+    kind: file/ipfs    
+    mapping:
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/round/metadata.ts
+      handler: handleMetaData
+      entities:
+        - RoundMetaData
+      abis:
+        - name: RoundFactory
+          file: ./abis/RoundFactory.json
+      
   ####################
   # == LEGACY ABI == #
   ####################
@@ -212,7 +283,7 @@ templates:
       abi: QuadraticFundingVotingStrategyImplementationLegacyV1
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.6
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
         - QFVote

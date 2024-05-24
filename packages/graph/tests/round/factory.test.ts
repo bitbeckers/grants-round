@@ -17,6 +17,7 @@ import {
   Program,
   Round,
   VotingStrategy,
+  QuadraticTipping,
 } from "../../generated/schema";
 
 let roundContractAddress: Address;
@@ -150,7 +151,6 @@ describe("handleRoundCreated", () => {
       "votingStrategy",
       "votingStrategy():(address)"
     ).returns([ethereum.Value.fromAddress(votingStrategy)]);
-
     // mock roundMetaPtr
     createMockedFunction(
       roundContractAddress,
@@ -186,6 +186,13 @@ describe("handleRoundCreated", () => {
     handleRoundCreated(newRoundEvent);
 
     const round = Round.load(roundContractAddress.toHex());
+
+    if (round) {
+      log.info("--> fox {} : round already exists", [
+        roundContractAddress.toHex(),
+      ]);
+    }
+
     assert.assertNotNull(round);
 
     assert.entityCount("Round", 1);
@@ -248,6 +255,16 @@ describe("handleRoundCreated", () => {
     const votingStrategyEntity = VotingStrategy.load(round!.votingStrategy);
     assert.assertNotNull(votingStrategyEntity);
     assert.stringEquals(votingStrategyEntity!.id, votingStrategy.toHex());
+
+    // quradraticTipping
+    const quadraticTippingEntity = QuadraticTipping.load(
+      round!.id
+    );
+    assert.assertNotNull(quadraticTippingEntity);
+    assert.stringEquals(
+      quadraticTippingEntity!.id,
+      roundContractAddress.toHex()
+    );
 
     // // projectsMetaPtr
     assert.assertNull(round!.projectsMetaPtr);
